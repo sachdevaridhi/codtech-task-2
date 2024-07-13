@@ -1,0 +1,95 @@
+import pandas as pd
+import numpy as np
+import matplotlib.pyplot as plt
+import seaborn as sns
+from sklearn.model_selection import train_test_split
+from sklearn.ensemble import IsolationForest
+from sklearn.neighbors import LocalOutlierFactor
+from sklearn.metrics import classification_report, precision_score, recall_score, f1_score, confusion_matrix
+
+# Load the dataset
+file_path = r'C:\Users\DELL\Documents\creditcard.csv'
+df = pd.read_csv(file_path)
+
+# Display the first few rows of the dataset
+print(df.head())
+# Basic statistics of the dataset
+print(df.describe())
+
+# Check for class distribution
+print(df['Class'].value_counts())
+
+# Plotting the distribution of the classes
+sns.countplot(x='Class', data=df)
+plt.title('Class Distribution')
+plt.show()
+# Separate the features and the target variable
+X = df.drop(columns='Class')
+y = df['Class']
+
+# Split the data into training and testing sets
+X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.2, random_state=42)
+# Isolation Forest
+isolation_forest = IsolationForest(contamination=0.001)
+isolation_forest.fit(X_train)
+y_pred_train_if = isolation_forest.predict(X_train)
+y_pred_test_if = isolation_forest.predict(X_test)
+
+# Local Outlier Factor
+local_outlier_factor = LocalOutlierFactor(n_neighbors=20, contamination=0.001)
+y_pred_train_lof = local_outlier_factor.fit_predict(X_train)
+y_pred_test_lof = local_outlier_factor.fit_predict(X_test)
+# Convert the predictions from -1, 1 to 0, 1
+y_pred_test_if = [1 if x == -1 else 0 for x in y_pred_test_if]
+y_pred_test_lof = [1 if x == -1 else 0 for x in y_pred_test_lof]
+
+# Classification Report for Isolation Forest
+print("Isolation Forest Classification Report:")
+print(classification_report(y_test, y_pred_test_if))
+
+# Classification Report for Local Outlier Factor
+print("Local Outlier Factor Classification Report:")
+print(classification_report(y_test, y_pred_test_lof))
+
+# Confusion matrix for Isolation Forest
+cm_if = confusion_matrix(y_test, y_pred_test_if)
+sns.heatmap(cm_if, annot=True, fmt='d', cmap='Blues')
+plt.title('Confusion Matrix for Isolation Forest')
+plt.xlabel('Predicted')
+plt.ylabel('Actual')
+plt.show()
+
+# Confusion matrix for Local Outlier Factor
+cm_lof = confusion_matrix(y_test, y_pred_test_lof)
+sns.heatmap(cm_lof, annot=True, fmt='d', cmap='Blues')
+plt.title('Confusion Matrix for Local Outlier Factor')
+plt.xlabel('Predicted')
+plt.ylabel('Actual')
+plt.show()
+# Convert the predictions from -1, 1 to 0, 1
+y_pred_test_if = [1 if x == -1 else 0 for x in y_pred_test_if]
+y_pred_test_lof = [1 if x == -1 else 0 for x in y_pred_test_lof]
+
+# Classification Report for Isolation Forest
+print("Isolation Forest Classification Report:")
+print(classification_report(y_test, y_pred_test_if))
+
+# Classification Report for Local Outlier Factor
+print("Local Outlier Factor Classification Report:")
+print(classification_report(y_test, y_pred_test_lof))
+
+# Confusion matrix for Isolation Forest
+cm_if = confusion_matrix(y_test, y_pred_test_if)
+sns.heatmap(cm_if, annot=True, fmt='d', cmap='Blues')
+plt.title('Confusion Matrix for Isolation Forest')
+plt.xlabel('Predicted')
+plt.ylabel('Actual')
+plt.show()
+
+# Confusion matrix for Local Outlier Factor
+cm_lof = confusion_matrix(y_test, y_pred_test_lof)
+sns.heatmap(cm_lof, annot=True, fmt='d', cmap='Blues')
+plt.title('Confusion Matrix for Local Outlier Factor')
+plt.xlabel('Predicted')
+plt.ylabel('Actual')
+plt.show()
